@@ -81,6 +81,10 @@ else
     [b1, a1] = butter(3, ops.fshigh/ops.fs*2, 'high');
 end
 
+[pth,name,ext] = fileparts(ops.fproc);
+SC.fid(1) = fopen(fullfile(pth,[name,'.before.bin']),'w'); % SC
+SC.fid(2) = fopen(fullfile(pth,[name,'.after.bin']),'w'); % SC
+
 for ibatch = 1:Nbatch
     offset = max(0, ops.twind + 2*NchanTOT*((NT - ops.ntbuff) * (ibatch-1) - 2*ops.ntbuff));
     if offset==0
@@ -111,10 +115,14 @@ for ibatch = 1:Nbatch
     % subtract the mean from each channel
     dataRAW = dataRAW - mean(dataRAW, 1);   
     
+    fwrite(SC.fid(1),dataRaw','int16'); %SC
+    
     % CAR, common average referencing by median
     if getOr(ops, 'CAR', 1)
         dataRAW = dataRAW - median(dataRAW, 2);
     end
+
+    fwrite(SC.fid(2),dataRaw','int16'); %SC
     
     datr = filter(b1, a1, dataRAW);
     datr = flipud(datr);
@@ -143,3 +151,8 @@ fprintf('Time %3.0fs. Finished preprocessing %d batches. \n', toc, Nbatch);
 
 rez.temp.Nbatch = Nbatch;
 
+fclose(SC.fid(1)); %SC
+fclose(SC.fid(2)); %SC
+
+ops = rez.ops; % SC
+save(fullfile(pth,[name,'.ops',ext]),'ops'); % SC
