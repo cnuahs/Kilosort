@@ -115,14 +115,14 @@ for ibatch = 1:Nbatch
     % subtract the mean from each channel
     dataRAW = dataRAW - mean(dataRAW, 1);   
     
-    fwrite(SC.fid(1),dataRaw','int16'); %SC
+    fwrite(SC.fid(1),dataRAW','int16'); %SC
     
     % CAR, common average referencing by median
     if getOr(ops, 'CAR', 1)
         dataRAW = dataRAW - median(dataRAW, 2);
     end
 
-    fwrite(SC.fid(2),dataRaw','int16'); %SC
+    fwrite(SC.fid(2),dataRAW','int16'); %SC
     
     datr = filter(b1, a1, dataRAW);
     datr = flipud(datr);
