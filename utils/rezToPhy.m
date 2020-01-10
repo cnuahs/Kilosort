@@ -59,7 +59,8 @@ for iNN = 1:size(templates,3)
    templates(:,:,iNN) = squeeze(U(:,iNN,:)) * squeeze(W(:,iNN,:))';
 end
 templates = permute(templates, [3 2 1]); % now it's nTemplates x nSamples x nChannels
-templatesInds = repmat([0:size(templates,3)-1], size(templates,1), 1); % we include all channels so this is trivial
+% templatesInds = repmat([0:size(templates,3)-1], size(templates,1), 1); % we include all channels so this is trivial
+templatesInds = repmat(find(rez.ops.igood), size(templates,1), 1)-1; 
 
 templateFeatures = rez.cProj;
 templateFeatureInds = uint32(rez.iNeigh);
@@ -114,7 +115,7 @@ if ~isempty(savePath)
     writeNPY([xcoords ycoords], fullfile(savePath, 'channel_positions.npy'));
 
     writeNPY(templateFeatures, fullfile(savePath, 'template_features.npy'));
-    writeNPY(templateFeatureInds'-1, fullfile(savePath, 'template_feature_ind.npy'));% -1 for zero indexing
+    writeNPY(templateFeatureInds'-1, fullfile(savePath, 'template_feature_ind.npy'));% -1 for zero indexing    
     writeNPY(pcFeatures, fullfile(savePath, 'pc_features.npy'));
     writeNPY(pcFeatureInds'-1, fullfile(savePath, 'pc_feature_ind.npy'));% -1 for zero indexing
 
