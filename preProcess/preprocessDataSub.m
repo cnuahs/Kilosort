@@ -32,14 +32,14 @@ if getOr(ops, 'minfr_goodchannels', .1)>0 % discard channels that have very few 
     % determine bad channels
     fprintf('Time %3.0fs. Determining good channels.. \n', toc);
     igood = get_good_channels(ops, chanMap);
-
+    
     chanMap = chanMap(igood); %it's enough to remove bad channels from the channel map, which treats them as if they are dead
 
     xc = xc(igood); % removes coordinates of bad channels
     yc = yc(igood);
     kcoords = kcoords(igood);
 
-    ops.igood = igood;
+    ops.igood = gather(igood); % gather (and store) as a CPU variable
 else
     ops.igood = true(size(chanMap));
 end
